@@ -13,12 +13,16 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 public class StepsRunner {
     public static void main(String[] args) throws Exception {
-        String output = "s3n://caspitheplayer7/output/";
+        String bucketName = "caspitheplayer369";
+        String output = "s3://"+bucketName+"/output/";
         String input = args[1];
         String time = args[2];
+        String lang = args[3];
+        String minimalPmi = args[4];
+        String relativeMinmalPmi = args[5];
         String output1 = output + "Step1Output" + time + "/";
         Configuration conf1 = new Configuration();
-        conf1.set("lang", args[3]);
+        conf1.set("lang", lang);
         System.out.println("Configuring Step 1");
         
         Job job = Job.getInstance(conf1, "Step1");
@@ -106,5 +110,20 @@ public class StepsRunner {
         System.out.println("Launching Step 3");
         job3.waitForCompletion(true);
         System.out.println("All steps are done");
+
+
+
+
+        // write the config of job 5
+
+        Configuration conf5 = new Configuration();
+        conf5.set("minimalPmi", minimalPmi);
+        conf5.set("relativeMinmalPmi",relativeMinmalPmi);
+        System.out.println("Configuring Step 5");
+        Job job5 = Job.getInstance(conf5, "Step5");
+
+
+
+
     }
 }
