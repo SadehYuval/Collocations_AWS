@@ -31,7 +31,7 @@ public class StepsRunner {
         job.setJarByClass(Step1.class);
         job.setMapperClass(Step1.MapperClass.class);
         job.setPartitionerClass(Step1.PartitionerClass.class);
-        //job.setCombinerClass(Step1.Combiner.class);
+        job.setCombinerClass(Step1.Combiner.class);
         job.setReducerClass(Step1.ReducerClass.class);
         job.setNumReduceTasks(33);
         job.setMapOutputKeyClass(Text.class);
@@ -65,7 +65,7 @@ public class StepsRunner {
         job2.setPartitionerClass(Step2.PartitionerClass.class);
         job2.setReducerClass(Step2.ReducerClass.class);
         
-        //job2.setCombinerClass(Step2.Combiner.class);
+        job2.setCombinerClass(Step2.Combiner.class);
         
         job2.setMapOutputKeyClass(Text.class);
         job2.setMapOutputValueClass(Text.class);
@@ -94,10 +94,10 @@ public class StepsRunner {
         job3.setJarByClass(Step3.class);
         job3.setMapperClass(Step3.MapperClass.class);
         job3.setReducerClass(Step3.ReducerClass.class);
+        job3.setCombinerClass(Step3.Combiner.class);
         job3.setPartitionerClass(Step3.PartitionerClass.class);
         
         //no need for combiner in 3rd step (every key is a unique bigram with year and logLambda value)
-        //job3.setCombinerClass(Step3.Combiner.class);
         
         job3.setMapOutputKeyClass(Text.class);
         job3.setNumReduceTasks(33);
@@ -129,7 +129,6 @@ public class StepsRunner {
         job4.setPartitionerClass(Step4.PartitionerClass.class);
         
         //no need for combiner in 3rd step (every key is a unique bigram with year and logLambda value)
-        //job3.setCombinerClass(Step3.Combiner.class);
         
         job4.setMapOutputKeyClass(Step4Key.class);
         job4.setNumReduceTasks(33);

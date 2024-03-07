@@ -41,7 +41,7 @@ public class Step3 {
 				Double currentCounter = Double.valueOf(context.getConfiguration().get(NcounterName));
 				Double npmi = calculateNPMI(c1, c2, c12, currentCounter);
 				context.write(new Text(year + "," + "*"), new Text("" + npmi)); // year,*	npmi
-				context.write(new Text(year + "," + w1 + "," + w2 + "," + npmi), new Text("placeholder")); // year,w1,w2,npmi	placeholder
+				context.write(new Text(year + "," + w1 + "," + w2 + "," + npmi), new Text("")); // year,w1,w2,npmi	placeholder
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -91,21 +91,26 @@ public class Step3 {
 
 	public static class Combiner extends Reducer<Text, Text, Text, Text> {
 		@Override
-		protected void reduce(Text key, Iterable<Text> values, Context context)
-				throws IOException, InterruptedException {
-			int count = 0;
+		protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+			// try and catch maybe
 			try {
-				for (Text txt : values) {
-					count += Integer.parseInt(txt.toString());
+				if(key.toString().contains("*")) { // year,*	npmi
+					int npmiSum = 0;
+					for (Text val : values) {
+						npmiSum += Double.parseDouble(val.toString());
+					}
+					context.write(key, new Text(String.valueOf(npmiSum)));
 				}
-				context.write(key, new Text(String.valueOf(count)));
-			} catch (Exception e) {
-				e.printStackTrace();
-				System.out.println(
-						"Error in Step3 Combiner --> key: " + key.toString() + " values: " + printerHanna(values));
+				else {
+					context.write(key, new Text(""));
+				}
+			}
+			catch (Exception e) {
+					e.printStackTrace();
+					context.write(key, new Text("Stam key to continue"));
+				}
 			}
 		}
 	}
 
 
-}
