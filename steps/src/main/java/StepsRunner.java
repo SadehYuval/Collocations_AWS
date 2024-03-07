@@ -13,12 +13,16 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 public class StepsRunner {
     public static void main(String[] args) throws Exception {
-        String output = "s3n://caspitheplayer7/output/";
+        String bucketName = "caspitheplayer7";
+        String output = "s3://"+bucketName+"/output/";
         String input = args[1];
         String time = args[2];
+        String lang = args[3];
+        String minimalPmi = args[4];
+        String relativeMinmalPmi = args[5];
         String output1 = output + "Step1Output" + time + "/";
         Configuration conf1 = new Configuration();
-        conf1.set("lang", args[3]);
+        conf1.set("lang", lang);
         System.out.println("Configuring Step 1");
         
         Job job = Job.getInstance(conf1, "Step1");
@@ -104,7 +108,40 @@ public class StepsRunner {
         FileInputFormat.addInputPath(job3, new Path(output2));
         FileOutputFormat.setOutputPath(job3, new Path(output3));
         System.out.println("Launching Step 3");
-        job3.waitForCompletion(true);
+        if (job3.waitForCompletion(true)) {
+            System.out.println("Step 3 finished");
+        } else {
+            System.out.println("Step 3 failed ");
+        }
+
+
+        // write the config of job 4
+        String output4 = output + "Step4Output" + time + "/";
+
+        Configuration conf4 = new Configuration();
+        conf4.set("minimalPmi", minimalPmi);
+        conf4.set("relativeMinmalPmi",relativeMinmalPmi);
+        System.out.println("Configuring Step 4");
+        Job job4 = Job.getInstance(conf4, "Step4");
+        job4.setJarByClass(Step4.class);
+        job4.setMapperClass(Step4.MapperClass.class);
+        job4.setReducerClass(Step4.ReducerClass.class);
+        job4.setPartitionerClass(Step4.PartitionerClass.class);
+        
+        //no need for combiner in 3rd step (every key is a unique bigram with year and logLambda value)
+        //job3.setCombinerClass(Step3.Combiner.class);
+        
+        job4.setMapOutputKeyClass(Text.class);
+        job4.setNumReduceTasks(33);
+        job4.setMapOutputValueClass(Text.class);
+        //job3.setSortComparatorClass(Step3.HannaDecadeComparator.class);
+        job4.setOutputKeyClass(Text.class);
+        job4.setOutputValueClass(Text.class);
+        FileInputFormat.addInputPath(job4, new Path(output3));
+        FileOutputFormat.setOutputPath(job4, new Path(output4));
+        System.out.println("Launching Step 4");
+        job4.waitForCompletion(true);
         System.out.println("All steps are done");
+
     }
 }

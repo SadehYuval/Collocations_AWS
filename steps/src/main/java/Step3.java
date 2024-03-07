@@ -40,9 +40,8 @@ public class Step3 {
 				//npmi,w1,w2,year	cw1w2
 				Double currentCounter = Double.valueOf(context.getConfiguration().get(NcounterName));
 				Double npmi = calculateNPMI(c1, c2, c12, currentCounter);
-				npmi = 1 / npmi;;
-				context.write(new Text(npmi + " " + w1 + " " + w2 + " " + year), new Text(String.valueOf(c12)));
-
+				context.write(new Text(year + "," + "*"), new Text("" + npmi));
+				context.write(new Text(year + "," + w1 + "," + w2 + "," + npmi), new Text("placeholder"));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -50,25 +49,28 @@ public class Step3 {
 	}
 
 	public static class ReducerClass extends Reducer<Text, Text, Text, Text> {
-		int count = 0;
+		double npmiSum;
 		@Override
 		protected void setup(Context context) throws IOException, InterruptedException {
 		}
 
 		@Override
 		public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-			count++;
-			System.out.println("Reduce(): => key: " + key.toString() + " count: " + count);
-			if(count<=100) {
-				String[] tmp = key.toString().split(" ");
-				Double myVal = 1 / Double.valueOf(tmp[0]);
+			if(key.toString().contains("*")) {
+				npmiSum = 0;
+				for (Text txt : values) {
+					npmiSum += Double.parseDouble(txt.toString());
+				}
+			}
+			else {
+				String[] tmp = key.toString().split(",");
+				String year = tmp[0];
 				String w1 = tmp[1];
 				String w2 = tmp[2];
-				String year = tmp[3];
-				
-				context.write(new Text(year + " " + w1 + " " + w2), new Text(String.valueOf(myVal)));
-				//write to output: year,w1,w2	npmi
-			}		
+				String npmi = tmp[3];
+				context.write(new Text(year + " " + w2 + " " + w1 + " " + npmi), new Text(String.valueOf(npmiSum)));
+				//write to output: year,w1,w2	npmi	
+			}
 		}
 	}
 
@@ -78,7 +80,7 @@ public class Step3 {
 			String[] parti = {"1530", "1540", "1560", "1620", "1670", "1680","1690", "1700", "1750", "1760",
 					"1780", "1790", "1800", "1810", "1820", "1830", "1840", "1850", "1860", "1870", "1880",
 					"1890", "1900", "1910", "1920", "1930", "1940", "1950", "1960", "1970", "1980", "1990", "2000"};
-			String year = key.toString().split(" ")[3];
+			String year = key.toString().split(",")[0];
 			for(int i=0; i<parti.length; i++)
 				if(parti[i].equalsIgnoreCase(year))
 					return (i % numPartitions);
