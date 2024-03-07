@@ -11,6 +11,7 @@ Step4$PartitionerClass.class
 Step1$PartitionerClass.class
 Step2$MapperClass.class
 Step3$Combiner.class
+Step4Key.class
 Step3$MapperClass.class
 Step1$Combiner.class
 Step4$ReducerClass.class

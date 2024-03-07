@@ -131,7 +131,7 @@ public class StepsRunner {
         //no need for combiner in 3rd step (every key is a unique bigram with year and logLambda value)
         //job3.setCombinerClass(Step3.Combiner.class);
         
-        job4.setMapOutputKeyClass(Text.class);
+        job4.setMapOutputKeyClass(Step4Key.class);
         job4.setNumReduceTasks(33);
         job4.setMapOutputValueClass(Text.class);
         //job3.setSortComparatorClass(Step3.HannaDecadeComparator.class);

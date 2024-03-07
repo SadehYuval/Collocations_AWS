@@ -40,8 +40,8 @@ public class Step3 {
 				//npmi,w1,w2,year	cw1w2
 				Double currentCounter = Double.valueOf(context.getConfiguration().get(NcounterName));
 				Double npmi = calculateNPMI(c1, c2, c12, currentCounter);
-				context.write(new Text(year + "," + "*"), new Text("" + npmi));
-				context.write(new Text(year + "," + w1 + "," + w2 + "," + npmi), new Text("placeholder"));
+				context.write(new Text(year + "," + "*"), new Text("" + npmi)); // year,*	npmi
+				context.write(new Text(year + "," + w1 + "," + w2 + "," + npmi), new Text("placeholder")); // year,w1,w2,npmi	placeholder
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -56,20 +56,20 @@ public class Step3 {
 
 		@Override
 		public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
-			if(key.toString().contains("*")) {
+			if(key.toString().contains("*")) { // year,*	npmi
 				npmiSum = 0;
-				for (Text txt : values) {
-					npmiSum += Double.parseDouble(txt.toString());
+				for (Text val : values) {
+					npmiSum += Double.parseDouble(val.toString());
 				}
 			}
-			else {
+			else {	// year,w1,w2,npmi	placeholder
 				String[] tmp = key.toString().split(",");
 				String year = tmp[0];
 				String w1 = tmp[1];
 				String w2 = tmp[2];
 				String npmi = tmp[3];
-				context.write(new Text(year + " " + w2 + " " + w1 + " " + npmi), new Text(String.valueOf(npmiSum)));
-				//write to output: year,w1,w2	npmi	
+				context.write(new Text(year + "," + w1 + "," + w2 + "," + npmi), new Text(String.valueOf(npmiSum)));
+				//write to output: year,w1,w2,npmi	npmiSum	
 			}
 		}
 	}
