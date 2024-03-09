@@ -13,7 +13,7 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 
 public class StepsRunner {
     public static void main(String[] args) throws Exception {
-        String bucketName = "caspitheplayer7";
+        String bucketName = "yaelbucketname";
         String output = "s3://"+bucketName+"/output/";
         String input = args[1];
         String time = args[2];

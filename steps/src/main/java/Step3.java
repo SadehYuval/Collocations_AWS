@@ -20,8 +20,11 @@ public class Step3 {
 	public static class MapperClass extends Mapper<LongWritable, Text, Text, Text> {
 
 		public static double calculateNPMI(double c1, double c2, double c12, double N) {
-			double pmi = Math.log(c12) + Math.log(N) - Math.log(c1) - Math.log(c2);
-			double npmi = pmi / ((-1) * (Math.log(c12) - Math.log(N)));
+			double pw1w2 = c12 / N;
+			double pw1 = c1 / N;
+			double pw2 = c2 / N;
+			double pmi = Math.log(pw1w2/pw1*pw2);
+			double npmi = pmi / ((-1) * (Math.log(pw1w2)));
 			return npmi;
 		}
 

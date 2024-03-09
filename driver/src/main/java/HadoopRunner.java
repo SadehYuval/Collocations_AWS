@@ -39,8 +39,8 @@ public class HadoopRunner {
 
     }
     public static void main(String[] args) {
-        String bucketName = "caspitheplayer7";
-        String language = "heb";
+        String bucketName = "yaelbucketname";
+        String language = "eng";
         if (args.length < 3 ){
             System.out.println("[ERROR]: not enought arguments given");
             System.exit(1);
@@ -53,7 +53,6 @@ public class HadoopRunner {
         AWSCredentials credentials = new BasicSessionCredentials(accessKey, secretKey, sessionToken);
 
         String input = "";
-        
         if(language.equals("heb")) {
         	input = "s3://datasets.elasticmapreduce/ngrams/books/20090715/heb-all/2gram/data";
             System.out.println("About to run extract collations in Hebrew");
